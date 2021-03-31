@@ -1,15 +1,13 @@
 package de.smartsquare.socketio.emitter
 
-import de.smartsquare.socketio.emitter.packers.BinaryPacker
-import de.smartsquare.socketio.emitter.packers.JsonPacker
+import de.smartsquare.socketio.emitter.packers.MapPacker
 import de.smartsquare.socketio.emitter.packers.TextPacker
 import redis.clients.jedis.Jedis
 
 class Emitter(private val jedis: Jedis, private val namespace: String = "/") {
 
     private val textPacker = TextPacker()
-    private val jsonPacker = JsonPacker()
-    private val binaryPacker = BinaryPacker()
+    private val jsonPacker = MapPacker()
 
     /**
      *
@@ -18,8 +16,7 @@ class Emitter(private val jedis: Jedis, private val namespace: String = "/") {
         val metadata = Metadata(namespace, rooms, except)
 
         val payload = when (message) {
-            is Message.BinaryMessage -> binaryPacker.pack(message, metadata)
-            is Message.JSONMessage -> jsonPacker.pack(message, metadata)
+            is Message.MapMessage -> jsonPacker.pack(message, metadata)
             is Message.TextMessage -> textPacker.pack(message, metadata)
         }
 

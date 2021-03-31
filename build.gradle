@@ -49,8 +49,8 @@ dependencies {
     implementation "org.msgpack:msgpack-core:$msgpackVersion"
 
     testImplementation "io.mockk:mockk:$mockkVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     testImplementation "org.amshove.kluent:kluent:$kluentVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
 }
 
 group = "de.smartsquare"

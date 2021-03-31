@@ -5,8 +5,11 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.amshove.kluent.shouldEqual
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.msgpack.core.MessagePack
 import redis.clients.jedis.Jedis
+import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 
 internal class EmitterTests {
 
@@ -84,4 +87,25 @@ internal class EmitterTests {
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
         encoded shouldEqual """["emitter",{"type":2,"data":"some message","nsp":"/"},{"rooms":[],"except":["a"],"flags":{}}]"""
     }
+
+    @Test
+    internal fun `publish json message including only primitives`() {
+        val publisher = Emitter(jedis)
+
+        publisher.broadcast(Message.MapMessage(mapOf("name" to "deen", "age" to 23, "height" to 1.9)))
+
+        val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
+        encoded shouldEqual """["emitter",{"type":2,"data":{"name":"deen","age":23,"height":1.9},"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+    }
+
+    @Test()
+    internal fun `throw exception on unknown type`() {
+        val publisher = Emitter(jedis)
+
+        assertThrows<IllegalStateException> {
+            publisher.broadcast(Message.MapMessage(mapOf("name" to "deen", "attributes" to PersonAttributes(age = 23))))
+        }
+    }
+
+    data class PersonAttributes(val age: Int)
 }

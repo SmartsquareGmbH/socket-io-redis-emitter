@@ -1,8 +1,7 @@
 package de.smartsquare.socketio.emitter
 
-sealed class Message() {
+sealed class Message {
 
     data class TextMessage(val value: String) : Message()
-    data class JSONMessage(val value: String) : Message()
-    data class BinaryMessage(val value: ByteArray) : Message()
+    data class MapMessage(val value: Map<String, Any>) : Message()
 }

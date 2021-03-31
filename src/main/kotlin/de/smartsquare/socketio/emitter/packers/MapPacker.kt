@@ -5,9 +5,9 @@ import de.smartsquare.socketio.emitter.Metadata
 import org.msgpack.core.MessagePack
 import java.io.ByteArrayOutputStream
 
-internal class TextPacker {
+internal class MapPacker {
 
-    fun pack(message: Message.TextMessage, metadata: Metadata): ByteArray {
+    fun pack(message: Message.MapMessage, metadata: Metadata): ByteArray {
         val packerStream = ByteArrayOutputStream()
 
         MessagePack.newDefaultPacker(packerStream).use {
@@ -16,9 +16,21 @@ internal class TextPacker {
             it.packMapHeader(3)
             it.packString("type")
             it.packInt(2)
-
             it.packString("data")
-            it.packString(message.value)
+
+            it.packMapHeader(message.value.size)
+            for ((key, value) in message.value) {
+                it.packString(key)
+
+                when (value) {
+                    is String -> it.packString(value)
+                    is Int -> it.packInt(value)
+                    is Double -> it.packDouble(value)
+                    is Long -> it.packLong(value)
+                    is Boolean -> it.packBoolean(value)
+                    else -> error("The type of ${key} is not implemented yet. Feel free to open a pull request.")
+                }
+            }
 
             it.packString("nsp")
             it.packString(metadata.namespace)
