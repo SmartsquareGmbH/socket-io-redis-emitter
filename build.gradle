@@ -1,0 +1,84 @@
+buildscript {
+    ext {
+        javaVersion = JavaVersion.VERSION_11
+
+        junitVersion = "5.7.1"
+        kotlinVersion = "1.4.30"
+        jedisVersion = "3.5.2"
+        mockkVersion = "1.11.0"
+        kluentVersion = "1.4"
+        testContainersVersion = "1.15.2"
+        msgpackVersion = "0.8.22"
+    }
+
+    repositories {
+        gradlePluginPortal()
+    }
+
+    configurations.classpath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
+plugins {
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+java {
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = javaVersion.toString()
+    }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    implementation "redis.clients:jedis:$jedisVersion"
+
+    implementation "org.msgpack:msgpack-core:$msgpackVersion"
+
+    testImplementation "io.mockk:mockk:$mockkVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testImplementation "org.amshove.kluent:kluent:$kluentVersion"
+}
+
+group = "de.smartsquare"
+version = "1.0"
+description = ""
+
+test {
+    useJUnitPlatform {
+        excludeEngines "junit-vintage"
+    }
+}
+
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/SmartsquareGmbH/socket-io-emitter")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            version = System.getenv("GITHUB_VERSION") ?: project.version
+
+            from(components.java)
+        }
+    }
+}
