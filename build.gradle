@@ -21,6 +21,7 @@ buildscript {
 }
 
 plugins {
+    id 'maven-publish'
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
 }
 

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test
 import org.msgpack.core.MessagePack
 import redis.clients.jedis.Jedis
 
-internal class RedisMessagePublisherTests {
+internal class EmitterTests {
 
     private val pubSlot = slot<ByteArray>()
 
