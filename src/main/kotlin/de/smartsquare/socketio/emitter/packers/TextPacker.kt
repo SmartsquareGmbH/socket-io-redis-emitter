@@ -16,13 +16,7 @@ class TextPacker {
             it.packString("type")
             it.packInt(2)
             it.packString("data")
-
-            val words = message.value.split(" ").filterNot { word -> word.isEmpty() }
-            it.packArrayHeader(words.size)
-            for (word in words) {
-                it.packString(word)
-            }
-
+            it.packString(message.value)
             it.packString("nsp")
             it.packString(message.namespace)
             it.packMapHeader(3)

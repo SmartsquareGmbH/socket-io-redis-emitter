@@ -20,11 +20,11 @@ internal class EmitterTests {
 
     @Test
     internal fun `publish string message`() {
-        publisher.broadcast(Message.TextMessage("some message asdasd"))
+        publisher.broadcast(Message.TextMessage("some very long message message message message"))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
 
-        encoded shouldEqual """["emitter",{"type":2,"data":["some","message","asdasd"],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+        encoded shouldEqual """["emitter",{"type":2,"data":"some very long message message message message","nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
     }
 
     @Test
@@ -33,16 +33,16 @@ internal class EmitterTests {
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
 
-        encoded shouldEqual """["emitter",{"type":2,"data":[],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+        encoded shouldEqual """["emitter",{"type":2,"data":"","nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
     }
 
     @Test
     internal fun `publish message in namespace`() {
-        publisher.broadcast(Message.TextMessage("some message asdasd", "mynamespace"))
+        publisher.broadcast(Message.TextMessage("some message", "mynamespace"))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
 
-        encoded shouldEqual """["emitter",{"type":2,"data":["some","message","asdasd"],"nsp":"mynamespace"},{"rooms":[],"except":[],"flags":{}}]"""
+        encoded shouldEqual """["emitter",{"type":2,"data":"some message","nsp":"mynamespace"},{"rooms":[],"except":[],"flags":{}}]"""
     }
 
     @Test
