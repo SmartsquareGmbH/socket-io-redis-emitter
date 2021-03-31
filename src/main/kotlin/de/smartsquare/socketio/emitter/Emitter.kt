@@ -11,13 +11,22 @@ class Emitter(private val jedis: Jedis, private val namespace: String = "/") {
     private val jsonPacker = JsonPacker()
     private val binaryPacker = BinaryPacker()
 
-    fun broadcast(message: Message) {
+    /**
+     *
+     */
+    fun broadcast(message: Message, rooms: List<String> = emptyList(), except: List<String> = emptyList()) {
+        val metadata = Metadata(namespace, rooms, except)
+
         val payload = when (message) {
-            is Message.BinaryMessage -> binaryPacker.pack(message)
-            is Message.JSONMessage -> jsonPacker.pack(message)
-            is Message.TextMessage -> textPacker.pack(message)
+            is Message.BinaryMessage -> binaryPacker.pack(message, metadata)
+            is Message.JSONMessage -> jsonPacker.pack(message, metadata)
+            is Message.TextMessage -> textPacker.pack(message, metadata)
         }
 
-        jedis.publish("socket.io#${namespace}#".toByteArray(), payload)
+        if (rooms.size == 1) {
+            jedis.publish("socket.io#${namespace}#${rooms.first()}#".toByteArray(), payload)
+        } else {
+            jedis.publish("socket.io#${namespace}#".toByteArray(), payload)
+        }
     }
 }

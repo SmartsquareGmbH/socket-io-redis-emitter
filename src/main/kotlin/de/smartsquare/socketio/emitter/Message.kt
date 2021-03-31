@@ -1,8 +1,8 @@
 package de.smartsquare.socketio.emitter
 
-sealed class Message(open val namespace: String) {
+sealed class Message() {
 
-    data class TextMessage(val value: String, override val namespace: String = "/") : Message(namespace)
-    data class JSONMessage(val value: String, override val namespace: String = "/") : Message(namespace)
-    data class BinaryMessage(val value: ByteArray, override val namespace: String = "/") : Message(namespace)
+    data class TextMessage(val value: String) : Message()
+    data class JSONMessage(val value: String) : Message()
+    data class BinaryMessage(val value: ByteArray) : Message()
 }
