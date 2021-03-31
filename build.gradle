@@ -55,14 +55,13 @@ dependencies {
 
 group = "de.smartsquare"
 version = "1.0"
-description = ""
+description = "Library to emit socket.io notifications via redis."
 
 test {
     useJUnitPlatform {
         excludeEngines "junit-vintage"
     }
 }
-
 
 publishing {
     repositories {
