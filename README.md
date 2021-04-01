@@ -47,7 +47,7 @@ dependencies {
 ### Emit Cheatsheet
 
 ```kotlin
-val emitter = Emitter(Jedis("localhost"))
+val emitter = Emitter(Jedis("localhost"), namespace = "/")
 
 // Publishing a simple text message
 emitter.broadcast(Message.TextMessage(topic = "something", value = "Hello World!"))
