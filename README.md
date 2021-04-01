@@ -37,3 +37,5 @@ The emitter is also available in other programming languages:
 
 ## :warning: Limitations
 
+- Publishing types other than primitives or maps is not supported yet. 
+- The room and namespaces have not been tested yet.
