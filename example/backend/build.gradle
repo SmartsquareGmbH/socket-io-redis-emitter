@@ -38,7 +38,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:b58fd83"
+    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:3d32db6"
 }
 
 group = "de.smartsquare"

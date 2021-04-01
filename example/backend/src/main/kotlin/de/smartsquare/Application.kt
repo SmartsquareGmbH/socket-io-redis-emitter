@@ -2,16 +2,19 @@ package de.smartsquare
 
 import de.smartsquare.socketio.emitter.Emitter
 import de.smartsquare.socketio.emitter.Message
-import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
 import kotlin.concurrent.fixedRateTimer
 
 fun main() {
-    val emitter = Emitter(Jedis("redis"))
+    val emitter = Emitter(JedisPool("redis"))
 
     fixedRateTimer("notifications", false, 0L, 1000L) {
         println("Publishing a new notification...")
 
-        // Objects are currently published as map
+        // Publishing a simple text message
+        emitter.broadcast(Message.TextMessage(topic = "something", value = "Hello World!"))
+
+        // Publishing a complex object is only supported as a map for now.
         val payload = mapOf("name" to "deen", "online" to true, "age" to 23)
         emitter.broadcast(Message.MapMessage(topic = "something", value = payload))
     }
