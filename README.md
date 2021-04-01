@@ -59,9 +59,9 @@ emitter.broadcast(Message.MapMessage(topic = "something", value = payload))
 
 ### Example
 
-The [example](example) directory contains a working docker-compose setup which can be started using `docker-compose up`.
-The setup contains one redis instance, one java publisher, three socket.io-servers and three consuming
-socket.io-clients.
+The [example](example) directory contains a working docker-compose setup which can be started
+using `docker-compose --compatibility up`. The setup contains one redis instance, one java publisher, three
+socket.io-servers and three consuming socket.io-clients.
 
 ## :warning: Limitations
 

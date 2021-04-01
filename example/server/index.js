@@ -1,11 +1,31 @@
-import redisAdapter from 'socket.io-redis'
-import {createServer} from "http"
-import {Server} from "socket.io"
+const cluster = require("cluster");
+const http = require("http");
+const {Server} = require("socket.io");
+const redisAdapter = require("socket.io-redis");
+const {setupMaster, setupWorker} = require("@socket.io/sticky");
 
-const port = process.argv[2]
-const httpServer = createServer()
-const io = new Server(httpServer)
+if (cluster.isMaster) {
+  console.log(`Master ${process.pid} is running`);
 
-io.adapter(redisAdapter({host: 'redis', port: 6379}));
+  const httpServer = http.createServer();
+  setupMaster(httpServer, {
+    loadBalancingMethod: "least-connection", // either "random", "round-robin" or "least-connection"
+  });
+  httpServer.listen(3000, () => console.log(`Master up and running`))
 
-httpServer.listen(port, () => console.log(`Server [${port}]: Up and Running`))
+  for (let i = 0; i < 5; i++) {
+    cluster.fork();
+  }
+
+  cluster.on("exit", (worker) => {
+    console.log(`Worker ${worker.process.pid} died`);
+    cluster.fork();
+  });
+} else {
+  console.log(`Worker ${process.pid} started`);
+
+  const httpServer = http.createServer();
+  const io = new Server(httpServer);
+  io.adapter(redisAdapter({host: "redis", port: 6379}));
+  setupWorker(io);
+}

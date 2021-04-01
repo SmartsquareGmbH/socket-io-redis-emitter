@@ -7,7 +7,7 @@
     "socket.io-client": "^4.0.1"
   },
   "scripts": {
-    "demo": "node index.js 3000 & node index.js 3001 & node index.js 3002"
+    "demo": "node index.js"
   },
   "type": "module"
 }

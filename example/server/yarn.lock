@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@socket.io/sticky@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@socket.io/sticky/-/sticky-1.0.0.tgz#9ced8c9740f6c9a78d1f17f341c0a3e5dc2a1ef2"
+  integrity sha512-rzSirS3BpOquZjfsBFn7EqrSA7+l7ZW5/TvuO1/2WT+W53u3OAybAICYPhEfWkh+W3S3zXP3S+KvJ/35jXqqpQ==
+
 "@types/component-emitter@^1.2.10":
   version "1.2.10"
   resolved "https://registry.yarnpkg.com/@types/component-emitter/-/component-emitter-1.2.10.tgz#ef5b1589b9f16544642e473db5ea5639107ef3ea"

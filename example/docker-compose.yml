@@ -14,5 +14,7 @@ services:
       - redis
   client:
     build: client
+    deploy:
+      replicas: 3
     depends_on:
       - socketio
