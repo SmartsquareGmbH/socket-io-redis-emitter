@@ -4,3 +4,15 @@ services:
     image: redis:5
     ports:
       - "6379:6379"
+  emitter:
+    build: backend
+    depends_on:
+      - redis
+  socketio:
+    build: server
+    depends_on:
+      - redis
+  client:
+    build: client
+    depends_on:
+      - socketio

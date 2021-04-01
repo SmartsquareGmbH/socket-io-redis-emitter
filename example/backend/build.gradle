@@ -15,6 +15,7 @@ buildscript {
 }
 
 plugins {
+    id "java"
     id "application"
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
 }
@@ -22,6 +23,7 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 java {
@@ -36,7 +38,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation "de.smartsquare:socket-io-redis-emitter:1.0"
+    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:b58fd83"
 }
 
 group = "de.smartsquare"
@@ -45,4 +47,12 @@ description = ""
 
 mainClassName = 'de.smartsquare.ApplicationKt'
 
-task demo() { dependsOn run }
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'de.smartsquare.ApplicationKt'
+        )
+    }
+
+    from configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+}
