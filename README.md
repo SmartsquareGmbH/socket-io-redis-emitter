@@ -1,3 +1,5 @@
+# :construction: Kotlin Socket-Redis Adapter
+
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
     * [Gradle Import](#gradle-import)
@@ -5,9 +7,11 @@
     * [Example](#example)
 - [Limitations](#limitations)
 
-# Architecture
+# :green_book: Architecture
 
-# Getting Started
+![](docs/architecture.png)
+
+# :running: Getting Started
 
 ## Gradle Import
 
@@ -15,5 +19,5 @@
 
 ## Example
 
-# Limitations
+# :warning: Limitations
 
