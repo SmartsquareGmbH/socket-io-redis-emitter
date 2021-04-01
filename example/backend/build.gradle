@@ -1,0 +1,48 @@
+buildscript {
+    ext {
+        javaVersion = JavaVersion.VERSION_11
+
+        kotlinVersion = "1.4.30"
+    }
+
+    repositories {
+        gradlePluginPortal()
+    }
+
+    configurations.classpath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
+plugins {
+    id "application"
+    id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+java {
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions {
+        jvmTarget = javaVersion.toString()
+    }
+}
+
+dependencies {
+    implementation "de.smartsquare:socket-io-redis-emitter:1.0"
+}
+
+group = "de.smartsquare"
+version = "1.0"
+description = ""
+
+mainClassName = 'de.smartsquare.ApplicationKt'
+
+task demo() { dependsOn run }
