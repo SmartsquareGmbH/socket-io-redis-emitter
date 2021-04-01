@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:b58fd83"
+    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:1c61cb7"
 }
 ```
 
