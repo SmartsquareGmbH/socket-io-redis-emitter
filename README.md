@@ -14,6 +14,7 @@ The emitter is also available in other programming languages:
 - Perl: https://metacpan.org/pod/SocketIO::Emitter
 - Rust: https://github.com/epli2/socketio-rust-emitter
 
+# Table of content
 
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
