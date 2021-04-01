@@ -2,9 +2,9 @@ package de.smartsquare.socketio.emitter
 
 import de.smartsquare.socketio.emitter.packers.MapPacker
 import de.smartsquare.socketio.emitter.packers.TextPacker
-import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
 
-class Emitter(private val jedis: Jedis, private val id: String = "emitter", private val namespace: String = "/") {
+class Emitter(private val jedis: JedisPool, private val id: String = "emitter", private val namespace: String = "/") {
 
     private val textPacker = TextPacker()
     private val jsonPacker = MapPacker()
@@ -21,9 +21,9 @@ class Emitter(private val jedis: Jedis, private val id: String = "emitter", priv
         }
 
         if (rooms.size == 1) {
-            jedis.publish("socket.io#${namespace}#${rooms.first()}#".toByteArray(), payload)
+            jedis.resource.use { it.publish("socket.io#${namespace}#${rooms.first()}#".toByteArray(), payload) }
         } else {
-            jedis.publish("socket.io#${namespace}#".toByteArray(), payload)
+            jedis.resource.use { it.publish("socket.io#${namespace}#".toByteArray(), payload) }
         }
     }
 }
