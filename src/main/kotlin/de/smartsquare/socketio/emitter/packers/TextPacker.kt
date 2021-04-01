@@ -12,12 +12,15 @@ internal class TextPacker {
 
         MessagePack.newDefaultPacker(packerStream).use {
             it.packArrayHeader(3)
-            it.packString("emitter")
+            it.packString(metadata.id)
             it.packMapHeader(3)
             it.packString("type")
             it.packInt(2)
 
             it.packString("data")
+
+            it.packArrayHeader(2)
+            it.packString(message.topic)
             it.packString(message.value)
 
             it.packString("nsp")
