@@ -35,6 +35,9 @@ The emitter is also available in other programming languages:
 
 ### Example
 
+The ![Example Directory](example) contains a working docker-compose setup which can be started using `docker-compose up`.
+The setup contains one redis instance, one java publisher, three socket.io-servers and three consuming socket.io-clients. 
+
 ## :warning: Limitations
 
 - Publishing types other than primitives or maps is not supported yet. 
