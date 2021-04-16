@@ -32,8 +32,6 @@ The emitter is also available in other programming languages:
 
 ### Gradle Import
 
-The library is only accessible via jitpack until production. You can pick every commit you want using the tag.
-
 ```groovy
 repositories {
     mavenCentral()
