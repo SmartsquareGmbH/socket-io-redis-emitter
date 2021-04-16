@@ -23,7 +23,6 @@ plugins {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url 'https://jitpack.io' }
 }
 
 java {
@@ -38,7 +37,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:3d32db6"
+    implementation "de.smartsquare.socket-io-redis-emitter:0.9.0"
 }
 
 group = "de.smartsquare"

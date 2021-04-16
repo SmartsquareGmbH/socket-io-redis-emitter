@@ -36,11 +36,11 @@ The library is only accessible via jitpack until production. You can pick every 
 
 ```groovy
 repositories {
-    maven { url 'https://jitpack.io' }
+    mavenCentral()
 }
 
 dependencies {
-    implementation "com.github.SmartsquareGmbH:socket-io-redis-emitter:1c61cb7"
+    implementation "de.smartsquare.socket-io-redis-emitter:0.9.0"
 }
 ```
 
