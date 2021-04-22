@@ -29,11 +29,13 @@ jobs:
         run: ./gradlew check
 
       - name: Publish
-        run: ./gradlew publishMavenPublicationToGitHubPackagesRepository
+        run: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
-          USERNAME: ${{ secrets.USERNAME }}
-          TOKEN: ${{ secrets.TOKEN }}
+          OSSRHUSER: ${{ secrets.OSSRHUSER }}
+          OSSRHPASSWORD: ${{ secrets.OSSRHPASSWORD }}
           GITHUB_VERSION: ${{ github.event.release.tag_name }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
       - name: Upload Gradle reports
         uses: actions/upload-artifact@v2.1.3
