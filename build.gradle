@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        javaVersion = JavaVersion.VERSION_11
+        javaVersion = JavaVersion.VERSION_1_8
 
         junitVersion = "5.7.1"
         kotlinVersion = "1.4.30"
@@ -91,15 +91,6 @@ jar {
 }
 
 publishing {
-    repositories {
-        maven {
-            url "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = project.findProperty("gpr.ossrhUser") ?: System.getenv("OSSRHUSER")
-                password = project.findProperty("gpr.ossrhPassword") ?: System.getenv("OSSRHPASSWORD")
-            }
-        }
-    }
     publications {
         mavenJava(MavenPublication) {
             artifactId = 'socket-io-redis-emitter'
