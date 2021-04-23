@@ -21,7 +21,6 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
@@ -37,7 +36,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation "de.smartsquare.socket-io-redis-emitter:0.9.1"
+    implementation "de.smartsquare:socket-io-redis-emitter:0.9.1"
 }
 
 group = "de.smartsquare"
