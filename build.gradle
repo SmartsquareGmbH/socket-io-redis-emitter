@@ -97,7 +97,7 @@ publishing {
         mavenJava(MavenPublication) {
             artifactId = 'socket-io-redis-emitter'
 
-            from components.java
+            from configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
 
             pom {
                 name = 'Socket-io-Redis-Emitter'
