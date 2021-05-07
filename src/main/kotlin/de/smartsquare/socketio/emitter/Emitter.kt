@@ -4,7 +4,7 @@ import de.smartsquare.socketio.emitter.packers.MapPacker
 import de.smartsquare.socketio.emitter.packers.TextPacker
 import redis.clients.jedis.JedisPool
 
-class Emitter(private val jedis: JedisPool, private val id: String = "emitter", private val namespace: String = "/") {
+class Emitter @JvmOverloads constructor(private val jedis: JedisPool, private val id: String = "emitter", private val namespace: String = "/") {
 
     private val textPacker = TextPacker()
     private val jsonPacker = MapPacker()
@@ -12,6 +12,7 @@ class Emitter(private val jedis: JedisPool, private val id: String = "emitter", 
     /**
      *
      */
+    @JvmOverloads
     fun broadcast(message: Message, rooms: List<String> = emptyList(), except: List<String> = emptyList()) {
         val metadata = Metadata(id, namespace, rooms, except)
 
