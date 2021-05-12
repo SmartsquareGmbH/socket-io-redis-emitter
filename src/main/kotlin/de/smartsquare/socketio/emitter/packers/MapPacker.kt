@@ -31,7 +31,7 @@ internal class MapPacker {
                     is Double -> it.packDouble(value)
                     is Long -> it.packLong(value)
                     is Boolean -> it.packBoolean(value)
-                    else -> error("The type of ${key} is not implemented yet. Feel free to open a pull request.")
+                    else -> error("The type of $key is not implemented yet. Feel free to open a pull request.")
                 }
             }
 

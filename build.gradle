@@ -3,14 +3,15 @@ buildscript {
         javaVersion = JavaVersion.VERSION_1_8
 
         junitVersion = "5.7.1"
-        kotlinVersion = "1.4.30"
+        kotlinVersion = "1.5.0"
+        detektVersion = "1.16.0"
+        ktlintVersion = "10.0.0"
         jedisVersion = "3.5.2"
         mockkVersion = "1.11.0"
         kluentVersion = "1.4"
-        testContainersVersion = "1.15.2"
         msgpackVersion = "0.8.22"
         dokkaVersion = "1.4.30"
-        gradleNexusVersion = "1.0.0"
+        gradleNexusVersion = "1.1.0"
     }
 
     repositories {
@@ -23,10 +24,12 @@ buildscript {
 }
 
 plugins {
-    id 'signing'
-    id 'maven-publish'
+    id "signing"
+    id "maven-publish"
     id "org.jetbrains.kotlin.jvm" version "$kotlinVersion"
     id "org.jetbrains.dokka" version "$dokkaVersion"
+    id "io.gitlab.arturbosch.detekt" version "$detektVersion"
+    id "org.jlleitschuh.gradle.ktlint" version "$ktlintVersion"
     id "io.github.gradle-nexus.publish-plugin" version "$gradleNexusVersion"
 }
 
@@ -38,6 +41,7 @@ repositories {
 java {
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
+
     withJavadocJar()
     withSourcesJar()
 }
@@ -45,12 +49,11 @@ java {
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     kotlinOptions {
         jvmTarget = javaVersion.toString()
+        allWarningsAsErrors = true
     }
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib"
-
     implementation "redis.clients:jedis:$jedisVersion"
 
     implementation "org.msgpack:msgpack-core:$msgpackVersion"
@@ -62,6 +65,7 @@ dependencies {
 
 dokkaHtml {
     outputDirectory.set(javadoc.destinationDir)
+
     dokkaSourceSets {
         named("main") {
             jdkVersion.set(javaVersion)
@@ -72,6 +76,16 @@ dokkaHtml {
             }
         }
     }
+}
+
+detekt {
+    config = files("${project.rootDir}/detekt.yml")
+
+    buildUponDefaultConfig = true
+}
+
+ktlint {
+    outputToConsole = true
 }
 
 tasks.withType(Javadoc).all {
@@ -88,47 +102,43 @@ test {
     }
 }
 
-jar {
-    from configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
-}
-
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = 'socket-io-redis-emitter'
+            artifactId = "socket-io-redis-emitter"
 
             from components.java
 
             pom {
-                name = 'Socket-io-Redis-Emitter'
-                description = 'Library to emit socket.io notifications via redis.'
-                url = 'https://github.com/SmartsquareGmbH/socket-io-redis-emitter'
+                name = "Socket-io-Redis-Emitter"
+                description = "Library to emit socket.io notifications via redis."
+                url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter"
 
                 licenses {
                     license {
-                        name = 'MIT License'
-                        url = 'https://opensource.org/licenses/MIT'
+                        name = "MIT License"
+                        url = "https://opensource.org/licenses/MIT"
                     }
                 }
                 developers {
                     developer {
-                        id = 'deen13'
-                        name = 'Dennis Dierkes'
-                        email = 'dierkes@smartsquare.de'
+                        id = "deen13"
+                        name = "Dennis Dierkes"
+                        email = "dierkes@smartsquare.de"
                     }
                 }
                 scm {
-                    connection = 'scm:git:https://github.com/SmartsquareGmbH/socket-io-redis-emitter.git'
-                    developerConnection = 'scm:git:ssh://github.com/SmartsquareGmbH/socket-io-redis-emitter.git'
-                    url = 'https://github.com/SmartsquareGmbH/socket-io-redis-emitter'
+                    connection = "scm:git:https://github.com/SmartsquareGmbH/socket-io-redis-emitter.git"
+                    developerConnection = "scm:git:ssh://github.com/SmartsquareGmbH/socket-io-redis-emitter.git"
+                    url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter"
                 }
                 organization {
-                    name = 'Smartsquare GmbH'
-                    url = 'https://github.com/SmartsquareGmbH'
+                    name = "Smartsquare GmbH"
+                    url = "https://github.com/SmartsquareGmbH"
                 }
                 issueManagement {
-                    system = 'GitHub'
-                    url = 'https://github.com/SmartsquareGmbH/socket-io-redis-emitter/issues'
+                    system = "GitHub"
+                    url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter/issues"
                 }
             }
         }
@@ -151,4 +161,8 @@ signing {
     def signingPassword = findProperty("signingPassword") ?: System.getenv("GPG_PASSPHRASE")
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign publishing.publications.mavenJava
+}
+
+test {
+    useJUnitPlatform()
 }

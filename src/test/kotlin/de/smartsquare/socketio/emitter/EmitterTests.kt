@@ -10,10 +10,8 @@ import org.junit.jupiter.api.assertThrows
 import org.msgpack.core.MessagePack
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
-import java.lang.IllegalArgumentException
-import java.lang.IllegalStateException
 
-internal class EmitterTests {
+class EmitterTests {
 
     private val topicSlot = slot<ByteArray>()
     private val pubSlot = slot<ByteArray>()
@@ -27,7 +25,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish string message`() {
+    fun `publish string message`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.TextMessage("topic", "some very long message message message message"))
@@ -38,7 +36,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `emitter releases the resource`() {
+    fun `emitter releases the resource`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.TextMessage("topic", "some very long message message message message"))
@@ -47,7 +45,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `customize emitter id`() {
+    fun `customize emitter id`() {
         val publisher = Emitter(jedisPool, "backend-1")
 
         publisher.broadcast(Message.TextMessage("topic", "some very long message message message message"))
@@ -58,7 +56,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish empty message`() {
+    fun `publish empty message`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.TextMessage("topic", ""))
@@ -68,7 +66,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish message in namespace`() {
+    fun `publish message in namespace`() {
         val publisher = Emitter(jedisPool, namespace = "mynamespace")
 
         publisher.broadcast(Message.TextMessage("topic", "some message"))
@@ -78,7 +76,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish message to a room`() {
+    fun `publish message to a room`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.TextMessage("topic", "some message"), rooms = listOf("myroom"))
@@ -91,7 +89,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish message to two rooms exclusively`() {
+    fun `publish message to two rooms exclusively`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.TextMessage("topic", "some message"), rooms = listOf("a", "b"))
@@ -104,7 +102,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish message to all rooms except one`() {
+    fun `publish message to all rooms except one`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.TextMessage("topic", "some message"), except = listOf("a"))
@@ -114,7 +112,7 @@ internal class EmitterTests {
     }
 
     @Test
-    internal fun `publish json message including only primitives`() {
+    fun `publish json message including only primitives`() {
         val publisher = Emitter(jedisPool)
 
         publisher.broadcast(Message.MapMessage("topic", mapOf("name" to "deen", "age" to 23, "height" to 1.9)))
@@ -123,8 +121,8 @@ internal class EmitterTests {
         encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"name":"deen","age":23,"height":1.9}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
     }
 
-    @Test()
-    internal fun `throw exception on unknown type`() {
+    @Test
+    fun `throw exception on unknown type`() {
         val publisher = Emitter(jedisPool)
 
         val message = Message.MapMessage("topic", mapOf("name" to "deen", "attributes" to PersonAttributes(age = 23)))
