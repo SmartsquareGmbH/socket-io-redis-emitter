@@ -131,7 +131,7 @@ class EmitterTests {
     fun `publish json message with date times`() {
         val publisher = Emitter(jedisPool)
 
-        val date = Date(1577836861001)
+        val date = Date(1609459261001)
         val localDateTime = LocalDateTime.of(2021, 1, 1, 1, 1, 1, 1)
         val offsetDateTime = OffsetDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
         val zonedDateTime = ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZoneId.of("Etc/UTC"))
@@ -149,7 +149,7 @@ class EmitterTests {
         )
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"date":"2020-01-01T01:01:01.001","localDateTime":"2021-01-01T01:01:01.000000001","offsetDateTime":"2021-01-01T01:01:01.000000001Z","zonedDateTime":"2021-01-01T01:01:01.000000001Z[Etc/UTC]"}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+        encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"date":"2021-01-01T01:01:01.001","localDateTime":"2021-01-01T01:01:01.000000001","offsetDateTime":"2021-01-01T01:01:01.000000001Z","zonedDateTime":"2021-01-01T01:01:01.000000001Z[Etc/UTC]"}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
     }
 
     @Test
