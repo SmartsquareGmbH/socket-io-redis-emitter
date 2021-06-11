@@ -10,6 +10,12 @@ import org.junit.jupiter.api.assertThrows
 import org.msgpack.core.MessagePack
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
+import java.util.Date
 
 class EmitterTests {
 
@@ -119,6 +125,31 @@ class EmitterTests {
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
         encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"name":"deen","age":23,"height":1.9}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+    }
+
+    @Test
+    fun `publish json message with date times`() {
+        val publisher = Emitter(jedisPool)
+
+        val date = Date(1577836861001)
+        val localDateTime = LocalDateTime.of(2021, 1, 1, 1, 1, 1, 1)
+        val offsetDateTime = OffsetDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
+        val zonedDateTime = ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZoneId.of("Etc/UTC"))
+
+        publisher.broadcast(
+            Message.MapMessage(
+                "topic",
+                mapOf(
+                    "date" to date,
+                    "localDateTime" to localDateTime,
+                    "offsetDateTime" to offsetDateTime,
+                    "zonedDateTime" to zonedDateTime
+                )
+            )
+        )
+
+        val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
+        encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"date":"2020-01-01T01:01:01.001","localDateTime":"2021-01-01T01:01:01.000000001","offsetDateTime":"2021-01-01T01:01:01.000000001Z","zonedDateTime":"2021-01-01T01:01:01.000000001Z[Etc/UTC]"}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
     }
 
     @Test

@@ -4,6 +4,9 @@ import de.smartsquare.socketio.emitter.Message
 import de.smartsquare.socketio.emitter.Metadata
 import org.msgpack.core.MessagePack
 import java.io.ByteArrayOutputStream
+import java.text.SimpleDateFormat
+import java.time.temporal.Temporal
+import java.util.Date
 
 internal class MapPacker {
 
@@ -31,6 +34,8 @@ internal class MapPacker {
                     is Double -> it.packDouble(value)
                     is Long -> it.packLong(value)
                     is Boolean -> it.packBoolean(value)
+                    is Date -> it.packString(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(value))
+                    is Temporal -> it.packString(value.toString())
                     else -> error("The type of $key is not implemented yet. Feel free to open a pull request.")
                 }
             }
