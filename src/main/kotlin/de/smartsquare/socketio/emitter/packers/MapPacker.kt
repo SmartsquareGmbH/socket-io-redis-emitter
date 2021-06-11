@@ -7,8 +7,16 @@ import java.io.ByteArrayOutputStream
 import java.text.SimpleDateFormat
 import java.time.temporal.Temporal
 import java.util.Date
+import java.util.TimeZone
 
 internal class MapPacker {
+
+    private companion object {
+        @JvmStatic
+        private val dateFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+    }
 
     fun pack(message: Message.MapMessage, metadata: Metadata): ByteArray {
         val packerStream = ByteArrayOutputStream()
@@ -34,7 +42,7 @@ internal class MapPacker {
                     is Double -> it.packDouble(value)
                     is Long -> it.packLong(value)
                     is Boolean -> it.packBoolean(value)
-                    is Date -> it.packString(SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(value))
+                    is Date -> it.packString(dateFormat.format(value))
                     is Temporal -> it.packString(value.toString())
                     else -> error("The type of $key is not implemented yet. Feel free to open a pull request.")
                 }

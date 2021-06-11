@@ -131,7 +131,7 @@ class EmitterTests {
     fun `publish json message with date times`() {
         val publisher = Emitter(jedisPool)
 
-        val date = Date(1609459261001)
+        val date = Date(1609462861001)
         val localDateTime = LocalDateTime.of(2021, 1, 1, 1, 1, 1, 1)
         val offsetDateTime = OffsetDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZoneOffset.UTC)
         val zonedDateTime = ZonedDateTime.of(2021, 1, 1, 1, 1, 1, 1, ZoneId.of("Etc/UTC"))
