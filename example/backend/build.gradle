@@ -2,7 +2,7 @@ buildscript {
     ext {
         javaVersion = JavaVersion.VERSION_11
 
-        kotlinVersion = "1.4.30"
+        kotlinVersion = "1.5.10"
     }
 
     repositories {
@@ -36,7 +36,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
 }
 
 dependencies {
-    implementation "de.smartsquare:socket-io-redis-emitter:0.9.1"
+    implementation "de.smartsquare:socket-io-redis-emitter:0.11.3"
 }
 
 group = "de.smartsquare"
@@ -46,6 +46,8 @@ description = ""
 mainClassName = 'de.smartsquare.ApplicationKt'
 
 jar {
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+
     manifest {
         attributes(
                 'Main-Class': 'de.smartsquare.ApplicationKt'

@@ -1,12 +1,11 @@
 package de.smartsquare
 
 import de.smartsquare.socketio.emitter.Emitter
-import de.smartsquare.socketio.emitter.Message
 import redis.clients.jedis.JedisPool
 import kotlin.concurrent.fixedRateTimer
 
 fun main() {
-    val emitter = Emitter(JedisPool("redis"))
+    val emitter = Emitter(JedisPool("redis", 6379))
 
     fixedRateTimer("notifications", false, 0L, 1000L) {
         println("Publishing a new notification...")
