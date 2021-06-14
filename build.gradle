@@ -46,6 +46,7 @@ repositories {
 
 dependencies {
     api "redis.clients:jedis:$jedisVersion"
+    api "com.fasterxml.jackson.core:jackson-core"
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
 
