@@ -12,10 +12,10 @@ fun main() {
         println("Publishing a new notification...")
 
         // Publishing a simple text message
-        emitter.broadcast(Message.TextMessage(topic = "something", value = "Hello World!"))
+        emitter.broadcast(topic = "something", value = "Hello World!")
 
-        // Publishing a complex object is only supported as a map for now.
+        // Publishing a complex object.
         val payload = mapOf("name" to "deen", "online" to true, "age" to 23)
-        emitter.broadcast(Message.MapMessage(topic = "something", value = payload))
+        emitter.broadcast(topic = "something", value = payload)
     }
 }

@@ -48,11 +48,29 @@ dependencies {
 val emitter = Emitter(JedisPool("localhost"), namespace = "/")
 
 // Publishing a simple text message
-emitter.broadcast(Message.TextMessage(topic = "something", value = "Hello World!"))
+emitter.broadcast(topic = "something", value = "Hello World!")
 
 // Publishing a complex object is only supported as a map for now.
 val payload = mapOf("name" to "deen", "online" to true, "age" to 23)
-emitter.broadcast(Message.MapMessage(topic = "something", value = payload))
+emitter.broadcast(topic = "something", value = payload)
+```
+
+### Serialization with Jackson
+
+The `Emitter` uses Jackson internally to convert payloads. It is by default configured to produce valid messages, but
+can be overridden:
+
+```kotlin
+// This is the default used in the Emitter. Adjust to your needs.
+val myObjectMapper = ObjectMapper(MessagePackFactory())
+    .findAndRegisterModules()
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) /* Does not work without for date times 
+                                                                with high precision. */
+
+// Construct as before but additionally with the ObjectMapper above.
+val emitterWithCustomObjectMapper = Emitter(JedisPool("localhost"), namespace = "/", objectMapper = myObjectMapper)
+
+emitter.broadcast(topic = "something", value = "Hello World!")
 ```
 
 ### Example
@@ -63,5 +81,4 @@ socket.io-servers and three consuming socket.io-clients.
 
 ## :warning: Limitations
 
-- Publishing types other than primitives or maps is not supported yet.
 - The room and namespaces have not been tested yet.
