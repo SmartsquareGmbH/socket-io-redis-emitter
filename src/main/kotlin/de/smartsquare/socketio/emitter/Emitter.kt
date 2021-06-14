@@ -11,7 +11,8 @@ class Emitter @JvmOverloads constructor(
     private val namespace: String = "/",
     objectMapper: ObjectMapper = ObjectMapper(MessagePackFactory())
         .findAndRegisterModules()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) // This does not work because of too large numbers.
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) /* Does not work without for date times
+                                                                    with high precision. */
 ) {
 
     private val messageConverter = MessageConverter(objectMapper)
