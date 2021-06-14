@@ -1,26 +1,24 @@
 package de.smartsquare.socketio.emitter
 
-import de.smartsquare.socketio.emitter.packers.MapPacker
-import de.smartsquare.socketio.emitter.packers.TextPacker
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import org.msgpack.jackson.dataformat.MessagePackFactory
 import redis.clients.jedis.JedisPool
 
 class Emitter @JvmOverloads constructor(
     private val jedis: JedisPool,
     private val id: String = "emitter",
-    private val namespace: String = "/"
+    private val namespace: String = "/",
+    objectMapper: ObjectMapper = ObjectMapper(MessagePackFactory())
+        .findAndRegisterModules()
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) // This does not work because of too large numbers.
 ) {
 
-    private val textPacker = TextPacker()
-    private val jsonPacker = MapPacker()
+    private val messageConverter = MessageConverter(objectMapper)
 
     @JvmOverloads
-    fun broadcast(message: Message, rooms: List<String> = emptyList(), except: List<String> = emptyList()) {
-        val metadata = Metadata(id, namespace, rooms, except)
-
-        val payload = when (message) {
-            is Message.MapMessage -> jsonPacker.pack(message, metadata)
-            is Message.TextMessage -> textPacker.pack(message, metadata)
-        }
+    fun broadcast(topic: String, value: Any, rooms: List<String> = emptyList(), except: List<String> = emptyList()) {
+        val payload = messageConverter.convert(SocketIoMessage(id, topic, value, namespace, rooms, except))
 
         if (rooms.size == 1) {
             jedis.resource.use { it.publish("socket.io#$namespace#${rooms.first()}#".toByteArray(), payload) }

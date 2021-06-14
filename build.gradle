@@ -11,8 +11,10 @@ buildscript {
         mockkVersion = "1.11.0"
         kluentVersion = "1.66"
         msgpackVersion = "0.9.0"
+        jacksonVersion = "2.12.3"
         jsonAssertVersion = "1.5.0"
         dokkaVersion = "1.4.32"
+        byteBuddyVersion = "1.11.1"
         gradleNexusVersion = "1.1.0"
         gradleVersionsVersion = "0.39.0"
     }
@@ -45,12 +47,22 @@ repositories {
 dependencies {
     api "redis.clients:jedis:$jedisVersion"
 
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+
     implementation "org.msgpack:msgpack-core:$msgpackVersion"
+    implementation "org.msgpack:jackson-dataformat-msgpack:$msgpackVersion"
+
+    implementation(platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion"))
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
 
     testImplementation "io.mockk:mockk:$mockkVersion"
     testImplementation "org.amshove.kluent:kluent:$kluentVersion"
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     testImplementation "org.skyscreamer:jsonassert:$jsonAssertVersion"
+
+    testRuntimeOnly "net.bytebuddy:byte-buddy:$byteBuddyVersion"
 }
 
 java {
