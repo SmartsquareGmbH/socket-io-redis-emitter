@@ -1,21 +1,20 @@
 buildscript {
     ext {
         javaVersion = JavaVersion.VERSION_1_8
+        gradleVersion = "7.0.2"
 
-        junitVersion = "5.7.1"
-        kotlinVersion = "1.5.0"
-        detektVersion = "1.16.0"
-        ktlintVersion = "10.0.0"
-        jedisVersion = "3.5.2"
+        junitVersion = "5.7.2"
+        kotlinVersion = "1.5.10"
+        detektVersion = "1.17.1"
+        ktlintVersion = "10.1.0"
+        jedisVersion = "3.6.1"
         mockkVersion = "1.11.0"
-        kluentVersion = "1.4"
-        msgpackVersion = "0.8.22"
-        dokkaVersion = "1.4.30"
+        kluentVersion = "1.66"
+        msgpackVersion = "0.9.0"
+        jsonAssertVersion = "1.5.0"
+        dokkaVersion = "1.4.32"
         gradleNexusVersion = "1.1.0"
-    }
-
-    repositories {
-        gradlePluginPortal()
+        gradleVersionsVersion = "0.39.0"
     }
 
     configurations.classpath {
@@ -31,11 +30,27 @@ plugins {
     id "io.gitlab.arturbosch.detekt" version "$detektVersion"
     id "org.jlleitschuh.gradle.ktlint" version "$ktlintVersion"
     id "io.github.gradle-nexus.publish-plugin" version "$gradleNexusVersion"
+    id "com.github.ben-manes.versions" version "$gradleVersionsVersion"
 }
+
+group = "de.smartsquare"
+version = System.getenv("GITHUB_VERSION") ?: "1.0.0-SNAPSHOT"
+description = "Library to emit socket.io notifications via redis."
 
 repositories {
     mavenCentral()
     jcenter()
+}
+
+dependencies {
+    api "redis.clients:jedis:$jedisVersion"
+
+    implementation "org.msgpack:msgpack-core:$msgpackVersion"
+
+    testImplementation "io.mockk:mockk:$mockkVersion"
+    testImplementation "org.amshove.kluent:kluent:$kluentVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testImplementation "org.skyscreamer:jsonassert:$jsonAssertVersion"
 }
 
 java {
@@ -53,14 +68,14 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
     }
 }
 
-dependencies {
-    api "redis.clients:jedis:$jedisVersion"
+detekt {
+    config = files("${project.rootDir}/detekt.yml")
 
-    implementation "org.msgpack:msgpack-core:$msgpackVersion"
+    buildUponDefaultConfig = true
+}
 
-    testImplementation "io.mockk:mockk:$mockkVersion"
-    testImplementation "org.amshove.kluent:kluent:$kluentVersion"
-    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+ktlint {
+    outputToConsole = true
 }
 
 dokkaHtml {
@@ -78,28 +93,27 @@ dokkaHtml {
     }
 }
 
-detekt {
-    config = files("${project.rootDir}/detekt.yml")
-
-    buildUponDefaultConfig = true
-}
-
-ktlint {
-    outputToConsole = true
-}
-
 tasks.withType(Javadoc).all {
     it.dependsOn dokkaHtml
 }
-
-group = "de.smartsquare"
-version = System.getenv("GITHUB_VERSION") ?: "1.0.0-SNAPSHOT"
-description = "Library to emit socket.io notifications via redis."
 
 test {
     useJUnitPlatform {
         excludeEngines "junit-vintage"
     }
+}
+
+dependencyUpdates {
+    rejectVersionIf {
+        isNonStable(it.candidate.version) && !isNonStable(it.currentVersion)
+    }
+}
+
+static def isNonStable(String version) {
+    def stableKeyword = ["RELEASE", "FINAL", "GA"].any { it -> version.toUpperCase().contains(it) }
+    def regex = /^[0-9,.v-]+(-r)?$/
+
+    return !stableKeyword && !(version ==~ regex)
 }
 
 publishing {
@@ -163,6 +177,6 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-test {
-    useJUnitPlatform()
+wrapper {
+    gradleVersion = project.ext.gradleVersion
 }

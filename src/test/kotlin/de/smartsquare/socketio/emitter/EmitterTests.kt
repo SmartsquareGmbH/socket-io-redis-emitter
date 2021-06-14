@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.amshove.kluent.shouldEqual
+import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.msgpack.core.MessagePack
@@ -38,7 +38,25 @@ class EmitterTests {
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
 
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic","some very long message message message message"],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  "some very long message message message message"
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test
@@ -58,7 +76,25 @@ class EmitterTests {
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
 
-        encoded shouldEqual """["backend-1",{"type":2,"data":["topic","some very long message message message message"],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "backend-1",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  "some very long message message message message"
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test
@@ -68,7 +104,26 @@ class EmitterTests {
         publisher.broadcast(Message.TextMessage("topic", ""))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic",""],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  ""
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test
@@ -78,7 +133,26 @@ class EmitterTests {
         publisher.broadcast(Message.TextMessage("topic", "some message"))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic","some message"],"nsp":"mynamespace"},{"rooms":[],"except":[],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  "some message"
+                ],
+                "nsp": "mynamespace"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test
@@ -88,10 +162,31 @@ class EmitterTests {
         publisher.broadcast(Message.TextMessage("topic", "some message"), rooms = listOf("myroom"))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic","some message"],"nsp":"/"},{"rooms":["myroom"],"except":[],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  "some message"
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [
+                  "myroom"
+                ],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
 
         val topic = topicSlot.captured.toString(charset = Charsets.UTF_8)
-        topic shouldEqual "socket.io#/#myroom#"
+        topic shouldBeEqualTo "socket.io#/#myroom#"
     }
 
     @Test
@@ -101,10 +196,32 @@ class EmitterTests {
         publisher.broadcast(Message.TextMessage("topic", "some message"), rooms = listOf("a", "b"))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic","some message"],"nsp":"/"},{"rooms":["a","b"],"except":[],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  "some message"
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [
+                  "a",
+                  "b"
+                ],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
 
         val topic = topicSlot.captured.toString(charset = Charsets.UTF_8)
-        topic shouldEqual "socket.io#/#"
+        topic shouldBeEqualTo "socket.io#/#"
     }
 
     @Test
@@ -114,7 +231,28 @@ class EmitterTests {
         publisher.broadcast(Message.TextMessage("topic", "some message"), except = listOf("a"))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic","some message"],"nsp":"/"},{"rooms":[],"except":["a"],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  "some message"
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [
+                  "a"
+                ],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test
@@ -124,7 +262,30 @@ class EmitterTests {
         publisher.broadcast(Message.MapMessage("topic", mapOf("name" to "deen", "age" to 23, "height" to 1.9)))
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"name":"deen","age":23,"height":1.9}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  {
+                    "name": "deen",
+                    "age": 23,
+                    "height": 1.9
+                  }
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test
@@ -149,7 +310,31 @@ class EmitterTests {
         )
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
-        encoded shouldEqual """["emitter",{"type":2,"data":["topic",{"date":"2021-01-01T01:01:01.001","localDateTime":"2021-01-01T01:01:01.000000001","offsetDateTime":"2021-01-01T01:01:01.000000001Z","zonedDateTime":"2021-01-01T01:01:01.000000001Z[Etc/UTC]"}],"nsp":"/"},{"rooms":[],"except":[],"flags":{}}]"""
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  {
+                    "date": "2021-01-01T01:01:01.001",
+                    "localDateTime": "2021-01-01T01:01:01.000000001",
+                    "offsetDateTime": "2021-01-01T01:01:01.000000001Z",
+                    "zonedDateTime": "2021-01-01T01:01:01.000000001Z[Etc/UTC]"
+                  }
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
     }
 
     @Test

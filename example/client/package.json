@@ -4,10 +4,13 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "socket.io-client": "^4.0.1"
+    "socket.io-client": "^4.1.2"
   },
   "scripts": {
     "demo": "node index.js"
   },
-  "type": "module"
+  "type": "module",
+  "resolutions": {
+    "**/ws": "^7.4.6"
+  }
 }
