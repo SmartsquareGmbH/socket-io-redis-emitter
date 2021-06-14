@@ -55,10 +55,10 @@ val payload = mapOf("name" to "deen", "online" to true, "age" to 23)
 emitter.broadcast(topic = "something", value = payload)
 ```
 
-### Serialization with jackson
+### Serialization with Jackson
 
 The `Emitter` uses Jackson internally to convert payloads. It is by default configured to produce valid messages, but
-can be overriden:
+can be overridden:
 
 ```kotlin
 // This is the default used in the Emitter. Adjust to your needs.
