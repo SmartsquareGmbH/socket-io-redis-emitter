@@ -41,7 +41,6 @@ description = "Library to emit socket.io notifications via redis."
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 dependencies {
