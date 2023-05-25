@@ -7,7 +7,6 @@ buildscript {
         kotlinVersion = "1.5.10"
         detektVersion = "1.17.1"
         ktlintVersion = "10.1.0"
-        jedisVersion = "3.6.1"
         mockkVersion = "1.11.0"
         kluentVersion = "1.66"
         msgpackVersion = "0.9.0"
@@ -36,7 +35,7 @@ plugins {
 }
 
 group = "de.smartsquare"
-version = System.getenv("GITHUB_VERSION") ?: "1.0.0-SNAPSHOT"
+version = System.getenv("GITHUB_VERSION") ?: "1.0.1-SNAPSHOT"
 description = "Library to emit socket.io notifications via redis."
 
 repositories {
@@ -44,7 +43,6 @@ repositories {
 }
 
 dependencies {
-    api "redis.clients:jedis:$jedisVersion"
     api "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
 
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"

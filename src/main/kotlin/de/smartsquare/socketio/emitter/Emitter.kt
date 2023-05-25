@@ -3,16 +3,15 @@ package de.smartsquare.socketio.emitter
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import org.msgpack.jackson.dataformat.MessagePackFactory
-import redis.clients.jedis.JedisPool
 
 class Emitter @JvmOverloads constructor(
-    private val jedis: JedisPool,
+    private val redisPublisher: RedisPublisher,
     private val id: String = "emitter",
     private val namespace: String = "/",
     objectMapper: ObjectMapper = ObjectMapper(MessagePackFactory())
         .findAndRegisterModules()
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS) /* Does not work without for date times
-                                                                    with high precision. */
+        // Does not work without for date times with high precision.
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS),
 ) {
 
     private val messageConverter = MessageConverter(objectMapper)
@@ -22,9 +21,9 @@ class Emitter @JvmOverloads constructor(
         val payload = messageConverter.convert(SocketIoMessage(id, topic, value, namespace, rooms, except))
 
         if (rooms.size == 1) {
-            jedis.resource.use { it.publish("socket.io#$namespace#${rooms.first()}#".toByteArray(), payload) }
+            redisPublisher.publish("socket.io#$namespace#${rooms.first()}#".toByteArray(), payload)
         } else {
-            jedis.resource.use { it.publish("socket.io#$namespace#".toByteArray(), payload) }
+            redisPublisher.publish("socket.io#$namespace#".toByteArray(), payload)
         }
     }
 }
