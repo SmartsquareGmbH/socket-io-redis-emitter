@@ -38,14 +38,18 @@ repositories {
 }
 
 dependencies {
-    implementation "de.smartsquare:socket-io-redis-emitter:0.11.3"
+    implementation "de.smartsquare:socket-io-redis-emitter:0.11.3"   
 }
 ```
 
+This library comes with a default implementation for both jedis and lettuce.
+
 ### Emit Cheatsheet
 
+When using Jedis:
 ```kotlin
-val emitter = Emitter(JedisPool("localhost"), namespace = "/")
+val jedisConnection = jedisConnectionFactory.connection as JedisConnection
+val emitter = Emitter(JedisPublisher(jedisConnection.jedis))
 
 // Publishing a simple text message
 emitter.broadcast(topic = "something", value = "Hello World!")
