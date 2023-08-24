@@ -186,12 +186,12 @@ nexusPublishing {
     }
 }
 
-//signing {
-//    def signingKey = findProperty("signingKey") ?: System.getenv("GPG_PRIVATE_KEY")
-//    def signingPassword = findProperty("signingPassword") ?: System.getenv("GPG_PASSPHRASE")
-//    useInMemoryPgpKeys(signingKey, signingPassword)
-//    sign publishing.publications.mavenJava
-//}
+signing {
+    def signingKey = findProperty("signingKey") ?: System.getenv("GPG_PRIVATE_KEY")
+    def signingPassword = findProperty("signingPassword") ?: System.getenv("GPG_PASSPHRASE")
+    useInMemoryPgpKeys(signingKey, signingPassword)
+    sign publishing.publications.mavenJava
+}
 
 wrapper {
     gradleVersion = project.ext.gradleVersion
