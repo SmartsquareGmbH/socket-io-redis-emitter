@@ -37,7 +37,7 @@ plugins {
 }
 
 group = "de.smartsquare"
-version = System.getenv("GITHUB_VERSION") ?: "1.0.1-SNAPSHOT"
+version = System.getenv("GITHUB_VERSION") ?: "1.0.0-SNAPSHOT"
 description = "Library to emit socket.io notifications via redis."
 
 repositories {
