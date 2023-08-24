@@ -21,9 +21,9 @@ class Emitter @JvmOverloads constructor(
         val payload = messageConverter.convert(SocketIoMessage(id, topic, value, namespace, rooms, except))
 
         if (rooms.size == 1) {
-            redisPublisher.publish("socket.io#$namespace#${rooms.first()}#".toByteArray(), payload)
+            redisPublisher.publish("socket.io#$namespace#${rooms.first()}#", payload)
         } else {
-            redisPublisher.publish("socket.io#$namespace#".toByteArray(), payload)
+            redisPublisher.publish("socket.io#$namespace#", payload)
         }
     }
 }

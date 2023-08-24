@@ -3,9 +3,11 @@ package de.smartsquare.socketio.emitter
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.msgpack.core.MessagePack
+import redis.clients.jedis.Jedis
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -18,13 +20,15 @@ class EmitterTest {
     private val topicSlot = slot<ByteArray>()
     private val pubSlot = slot<ByteArray>()
 
-    private val publisher = mockk<RedisPublisher>(relaxed = true) {
-        every { publish(capture(topicSlot), capture(pubSlot)) } answers {}
+    private val jedis = mockk<Jedis>(relaxed = true) {
+        every { publish(capture(topicSlot), capture(pubSlot)) } answers { 1 }
     }
+
+    private val jedisPublisher = JedisPublisher(jedis)
 
     @Test
     fun `publish string message`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         publisher.broadcast("topic", "some very long message message message message")
 
@@ -52,8 +56,17 @@ class EmitterTest {
     }
 
     @Test
+    fun `emitter releases the resource`() {
+        val publisher = Emitter(jedisPublisher)
+
+        publisher.broadcast("topic", "some very long message message message message")
+
+        verify(exactly = 1) { jedis.close() }
+    }
+
+    @Test
     fun `customize emitter id`() {
-        val publisher = Emitter(publisher, "backend-1")
+        val publisher = Emitter(jedisPublisher, "backend-1")
 
         publisher.broadcast("topic", "some very long message message message message")
 
@@ -82,7 +95,7 @@ class EmitterTest {
 
     @Test
     fun `publish empty message`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         publisher.broadcast("topic", "")
 
@@ -111,7 +124,7 @@ class EmitterTest {
 
     @Test
     fun `publish message in namespace`() {
-        val publisher = Emitter(publisher, namespace = "mynamespace")
+        val publisher = Emitter(jedisPublisher, namespace = "mynamespace")
 
         publisher.broadcast("topic", "some message")
 
@@ -140,7 +153,7 @@ class EmitterTest {
 
     @Test
     fun `publish message to a room`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         publisher.broadcast("topic", "some message", rooms = listOf("myroom"))
 
@@ -174,7 +187,7 @@ class EmitterTest {
 
     @Test
     fun `publish message to two rooms exclusively`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         publisher.broadcast("topic", "some message", rooms = listOf("a", "b"))
 
@@ -209,7 +222,7 @@ class EmitterTest {
 
     @Test
     fun `publish message to all rooms except one`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         publisher.broadcast("topic", "some message", except = listOf("a"))
 
@@ -240,7 +253,7 @@ class EmitterTest {
 
     @Test
     fun `publish json message including only primitives`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         publisher.broadcast("topic", mapOf("name" to "deen", "age" to 23, "height" to 1.9))
 
@@ -273,7 +286,7 @@ class EmitterTest {
 
     @Test
     fun `publish json message with date times`() {
-        val publisher = Emitter(publisher)
+        val publisher = Emitter(jedisPublisher)
 
         val date = Date(1609462861001)
         val localDateTime = LocalDateTime.of(2021, 1, 1, 1, 1, 1, 1)
@@ -286,8 +299,8 @@ class EmitterTest {
                 "date" to date,
                 "localDateTime" to localDateTime,
                 "offsetDateTime" to offsetDateTime,
-                "zonedDateTime" to zonedDateTime,
-            ),
+                "zonedDateTime" to zonedDateTime
+            )
         )
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
