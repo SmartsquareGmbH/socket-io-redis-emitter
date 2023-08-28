@@ -6,5 +6,5 @@ internal data class SocketIoMessage(
     val value: Any,
     val namespace: String,
     val rooms: List<String>,
-    val except: List<String>
+    val except: List<String>,
 )
