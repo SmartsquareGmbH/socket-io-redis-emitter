@@ -11,15 +11,15 @@ internal class MessageConverter(private val objectMapper: ObjectMapper) {
                 "type" to 2,
                 "data" to arrayOf(
                     message.topic,
-                    message.value
+                    message.value,
                 ),
-                "nsp" to message.namespace
+                "nsp" to message.namespace,
             ),
             mapOf(
                 "rooms" to message.rooms,
                 "except" to message.except,
-                "flags" to emptyMap<String, String>()
-            )
+                "flags" to emptyMap<String, String>(),
+            ),
         )
 
         return objectMapper.writeValueAsBytes(convertedMessage)
