@@ -299,8 +299,8 @@ class EmitterTest {
                 "date" to date,
                 "localDateTime" to localDateTime,
                 "offsetDateTime" to offsetDateTime,
-                "zonedDateTime" to zonedDateTime
-            )
+                "zonedDateTime" to zonedDateTime,
+            ),
         )
 
         val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
