@@ -83,13 +83,14 @@ socket.io-servers and three consuming socket.io-clients.
 
 ### Usage in Spring Boot and Jedis
 
-Jedis:
+We don't want to rely on the Spring Data Redis abstractions in this project.
+Unfortunately, this makes it necessary that you configure the `JedisPool` manually in your Spring Boot application.
+Having JedisPool configured, the emitter can be created as follows:
+
 ```kotlin
 @Bean
-fun emitter(redisConnectionFactory: RedisConnectionFactory): Emitter {
-    val jedisConnectionFactory = redisConnectionFactory as JedisConnectionFactory
-    val jedisConnection = jedisConnectionFactory.connection as JedisConnection
-    return Emitter(JedisPublisher(jedisConnection.jedis))
+fun emitter(jedisPool: JedisPool): Emitter {
+    return Emitter(JedisPublisher(jedisPool))
 }
 ```
 
