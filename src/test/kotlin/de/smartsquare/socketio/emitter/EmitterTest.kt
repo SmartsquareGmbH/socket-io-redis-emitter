@@ -8,6 +8,7 @@ import org.amshove.kluent.shouldBeEqualTo
 import org.junit.jupiter.api.Test
 import org.msgpack.core.MessagePack
 import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -20,11 +21,15 @@ class EmitterTest {
     private val topicSlot = slot<ByteArray>()
     private val pubSlot = slot<ByteArray>()
 
+    private val jedisPool = mockk<JedisPool>(relaxed = true) {
+        every { resource } answers { jedis }
+    }
+
     private val jedis = mockk<Jedis>(relaxed = true) {
         every { publish(capture(topicSlot), capture(pubSlot)) } answers { 1 }
     }
 
-    private val jedisPublisher = JedisPublisher(jedis)
+    private val jedisPublisher = JedisPublisher(jedisPool)
 
     @Test
     fun `publish string message`() {
