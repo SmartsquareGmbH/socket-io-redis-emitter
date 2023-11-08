@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation "de.smartsquare:socket-io-redis-emitter:0.12.0"
+    implementation "de.smartsquare:socket-io-redis-emitter:0.13.0"
 }
 ```
 
