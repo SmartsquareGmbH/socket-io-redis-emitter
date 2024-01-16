@@ -2,18 +2,14 @@ package de.smartsquare.socketio.emitter
 
 import com.redis.testcontainers.RedisContainer
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldContain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.data.redis.connection.Message
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
 import org.springframework.data.redis.core.StringRedisTemplate
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @Testcontainers
 class SpringDataPublisherTest {
@@ -45,21 +41,11 @@ class SpringDataPublisherTest {
     fun `publish string message`() {
         val publisher = Emitter(SpringDataPublisher(template))
 
-        val countDownLatch = CountDownLatch(1)
-
-        val messageListener = { message: Message, _: ByteArray? ->
-            message.channel.decodeToString() shouldBeEqualTo "socket.io#/#"
-            message.body.decodeToString() shouldContain "test 123"
-
-            countDownLatch.countDown()
+        val (channel, message) = awaitRedisMessage(redis.redisURI, "socket.io#/#") {
+            publisher.broadcast("topic", "test 123")
         }
 
-        template.requiredConnectionFactory.connection.also {
-            it.subscribe(messageListener, "socket.io#/#".toByteArray())
-        }
-
-        publisher.broadcast("topic", "test 123")
-
-        countDownLatch.await(5, TimeUnit.SECONDS).shouldBeTrue()
+        channel shouldBeEqualTo "socket.io#/#"
+        message shouldContain "test 123"
     }
 }

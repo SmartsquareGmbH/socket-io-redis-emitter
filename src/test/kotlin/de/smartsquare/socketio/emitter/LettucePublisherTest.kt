@@ -2,17 +2,13 @@ package de.smartsquare.socketio.emitter
 
 import com.redis.testcontainers.RedisContainer
 import io.lettuce.core.RedisClient
-import io.lettuce.core.pubsub.RedisPubSubAdapter
 import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldContain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @Testcontainers
 class LettucePublisherTest {
@@ -34,27 +30,13 @@ class LettucePublisherTest {
 
     @Test
     fun `publish string message`() {
-        val connection = client.connect().sync()
-        val publisher = Emitter(LettucePublisher(connection))
+        val publisher = Emitter(LettucePublisher(client.connect().sync()))
 
-        val countDownLatch = CountDownLatch(1)
-
-        val listener = object : RedisPubSubAdapter<String, String>() {
-            override fun message(channel: String, message: String) {
-                channel shouldBeEqualTo "socket.io#/#"
-                message shouldContain "test 123"
-
-                countDownLatch.countDown()
-            }
+        val (channel, message) = awaitRedisMessage(redis.redisURI, "socket.io#/#") {
+            publisher.broadcast("topic", "test 123")
         }
 
-        client.connectPubSub().apply {
-            addListener(listener)
-            sync().subscribe("socket.io#/#")
-        }
-
-        publisher.broadcast("topic", "test 123")
-
-        countDownLatch.await(5, TimeUnit.SECONDS).shouldBeTrue()
+        channel shouldBeEqualTo "socket.io#/#"
+        message shouldContain "test 123"
     }
 }
