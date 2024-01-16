@@ -42,7 +42,9 @@ dependencies {
 }
 ```
 
-This library comes with a default implementation for both jedis and lettuce.
+This library comes with a default implementation
+for [Jedis](https://github.com/redis/jedis),[Lettuce](https://lettuce.io/)
+and [Spring Data Redis](https://spring.io/projects/spring-data-redis/).
 
 ### Emit Cheatsheet
 
@@ -80,19 +82,6 @@ emitter.broadcast(topic = "something", value = "Hello World!")
 The [example](example) directory contains a working docker-compose setup which can be started
 using `docker-compose --compatibility up`. The setup contains one redis instance, one java publisher, three
 socket.io-servers and three consuming socket.io-clients.
-
-### Usage in Spring Boot and Jedis
-
-We don't want to rely on the Spring Data Redis abstractions in this project.
-Unfortunately, this makes it necessary that you configure the `JedisPool` manually in your Spring Boot application.
-Having JedisPool configured, the emitter can be created as follows:
-
-```kotlin
-@Bean
-fun emitter(jedisPool: JedisPool): Emitter {
-    return Emitter(JedisPublisher(jedisPool))
-}
-```
 
 ## :warning: Limitations
 
