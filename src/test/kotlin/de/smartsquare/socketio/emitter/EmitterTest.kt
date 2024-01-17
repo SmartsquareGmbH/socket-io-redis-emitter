@@ -335,4 +335,42 @@ class EmitterTest {
             ]
         """.trimIndent()
     }
+
+    @Test
+    fun `publish complex json message`() {
+        val publisher = Emitter(jedisPublisher)
+
+        data class ComplexObject(val test: String, val test2: List<String>, val test3: Map<String, Boolean>)
+
+        publisher.broadcast(
+            "topic",
+            ComplexObject("a", listOf("b"), mapOf("c" to true)),
+        )
+
+        val encoded = MessagePack.newDefaultUnpacker(pubSlot.captured).unpackValue().toString()
+
+        // language=json
+        encoded shouldBeEqualToJson """
+            [
+              "emitter",
+              {
+                "type": 2,
+                "data": [
+                  "topic",
+                  {
+                    "test": "a",
+                    "test2": ["b"],
+                    "test3": { "c": true }
+                  }
+                ],
+                "nsp": "/"
+              },
+              {
+                "rooms": [],
+                "except": [],
+                "flags": {}
+              }
+            ]
+        """.trimIndent()
+    }
 }

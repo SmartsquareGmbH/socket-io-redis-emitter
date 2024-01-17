@@ -1,10 +1,8 @@
-# :construction: Kotlin Socket-Redis Adapter
+# :construction: Socket.io Redis Emitter
 
-This library allows you to easily publish notifications via `socket.io` from your kotlin backend. This is currently
-under construction and not production ready yet.
+This library allows you to easily publish notifications via `socket.io` from your java/kotlin/jvm backend.
 
-It must be used in conjunction with socket.io-redis. The current version is only tested with socket.io-redis@6 and
-socket.io@4.
+To be used in conjunction with the [redis adapter](https://socket.io/docs/v4/redis-adapter/).
 
 The emitter is also available in other programming languages:
 
@@ -20,15 +18,14 @@ The emitter is also available in other programming languages:
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
     * [Gradle Import](#gradle-import)
-    * [Emit Cheatsheet](#emit-cheatsheet)
+    * [Usage](#usage)
     * [Example](#example)
-- [Limitations](#limitations)
 
-## :green_book: Architecture
+## Architecture
 
 ![](docs/architecture.png)
 
-## :running: Getting Started
+## Getting Started
 
 ### Gradle Import
 
@@ -38,18 +35,25 @@ repositories {
 }
 
 dependencies {
-    implementation "de.smartsquare:socket-io-redis-emitter:0.13.0"
+    implementation "de.smartsquare:socket-io-redis-emitter:0.14.0"
 }
 ```
 
+### Usage
+
 This library comes with a default implementation
-for [Jedis](https://github.com/redis/jedis),[Lettuce](https://lettuce.io/)
+for [Jedis](https://github.com/redis/jedis), [Lettuce](https://lettuce.io/)
 and [Spring Data Redis](https://spring.io/projects/spring-data-redis/).
 
-### Emit Cheatsheet
+#### With Lettuce
 
 ```kotlin
-val emitter = Emitter(JedisPublisher(jedis))
+// Lettuce setup (https://lettuce.io/docs/getting-started.html)
+var redisClient = RedisClient.create("redis://localhost:6379")
+var connection = redisClient.connect()
+var syncCommands = connection.sync()
+
+val emitter = Emitter(LettucePublisher(syncCommands))
 
 // Publishing a simple text message
 emitter.broadcast(topic = "something", value = "Hello World!")
@@ -57,6 +61,48 @@ emitter.broadcast(topic = "something", value = "Hello World!")
 // Publishing a complex object is only supported as a map for now.
 val payload = mapOf("name" to "deen", "online" to true, "age" to 23)
 emitter.broadcast(topic = "something", value = payload)
+```
+
+#### With Jedis
+
+```kotlin
+// Jedis setup (https://github.com/redis/jedis/wiki/Getting-started#basic-usage-example)
+var pool = JedisPool("redis://localhost:6379")
+
+val emitter = Emitter(JedisPublisher(pool))
+
+emitter.broadcast(topic = "something", value = "Hello World!")
+```
+
+#### With Spring Data Redis
+
+```kotlin
+@Configuration
+class RedisConfig {
+    @Bean
+    fun emitter(redisTemplate: StringRedisTemplate): Emitter {
+        return Emitter(SpringDataPublisher(redisTemplate))
+    }
+}
+
+@Service
+class TestService(private val emitter: Emitter) {
+    fun emit() {
+      emitter.broadcast(topic = "something", value = "Hello World!")
+    }
+}
+```
+
+#### Extending
+
+Implement the `RedisPublisher` interface to add support for another client.
+
+```kotlin
+class OtherClientPublisher(private val client: OtherClient) : RedisPublisher {
+    override fun publish(channel: String, message: ByteArray) {
+        client.publish(channel, message.decodeToString())
+    }
+}
 ```
 
 ### Serialization with Jackson
@@ -74,7 +120,7 @@ val myObjectMapper = ObjectMapper(MessagePackFactory())
 // Construct as before but additionally with the ObjectMapper above.
 val emitterWithCustomObjectMapper = Emitter(JedisPool("localhost"), namespace = "/", objectMapper = myObjectMapper)
 
-emitter.broadcast(topic = "something", value = "Hello World!")
+emitterWithCustomObjectMapper.broadcast(topic = "something", value = "Hello World!")
 ```
 
 ### Example
@@ -82,7 +128,3 @@ emitter.broadcast(topic = "something", value = "Hello World!")
 The [example](example) directory contains a working docker-compose setup which can be started
 using `docker-compose --compatibility up`. The setup contains one redis instance, one java publisher, three
 socket.io-servers and three consuming socket.io-clients.
-
-## :warning: Limitations
-
-- The room and namespaces have not been tested yet.
