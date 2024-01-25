@@ -157,10 +157,12 @@ nexusPublishing {
 }
 
 signing {
-    val signingKey = findProperty("signingKey")?.toString() ?: System.getenv("GPG_PRIVATE_KEY")
-    val signingPassword = findProperty("signingPassword")?.toString() ?: System.getenv("GPG_PASSPHRASE")
-    useInMemoryPgpKeys(signingKey, signingPassword)
-    sign(publishing.publications)
+    if (!version.toString().endsWith("SNAPSHOT")) {
+        val signingKey = findProperty("signingKey")?.toString() ?: System.getenv("GPG_PRIVATE_KEY")
+        val signingPassword = findProperty("signingPassword")?.toString() ?: System.getenv("GPG_PASSPHRASE")
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications)
+    }
 }
 
 tasks.withType<Wrapper> {
