@@ -14,7 +14,9 @@ infix fun String.shouldBeEqualToJson(expected: String): String = apply { JSONAss
  * most five seconds after executing [body] for the message to arrive.
  */
 fun awaitRedisMessage(redisURI: String, channel: String, body: () -> Unit): RedisMessage {
-    return RedisClient.create(redisURI).use { client ->
+    val client = RedisClient.create(redisURI)
+
+    return client.use { client ->
         var result: RedisMessage? = null
 
         val countDownLatch = CountDownLatch(1)

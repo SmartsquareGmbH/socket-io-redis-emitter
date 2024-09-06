@@ -14,7 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers
 class LettucePublisherTest {
 
     @Container
-    private val redis = RedisContainer("redis:6-alpine")
+    private val redis = RedisContainer("redis:7-alpine")
 
     private lateinit var client: RedisClient
 

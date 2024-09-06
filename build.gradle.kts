@@ -1,15 +1,18 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinJvm
 import com.vanniktech.maven.publish.SonatypeHost
-import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "1.9.22"
-    id("org.jetbrains.dokka") version "1.9.10"
-    id("io.gitlab.arturbosch.detekt") version "1.23.4"
-    id("org.jmailen.kotlinter") version "4.2.0"
+    kotlin("jvm") version "2.0.20"
+    id("dev.adamko.dokkatoo-html") version "2.3.1"
+    id("dev.adamko.dokkatoo-javadoc") version "2.3.1"
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("org.jmailen.kotlinter") version "4.4.1"
+    id("com.adarshr.test-logger") version "4.0.0"
     id("com.vanniktech.maven.publish") version "0.29.0"
-    id("com.github.ben-manes.versions") version "0.50.0"
+    id("com.github.ben-manes.versions") version "0.51.0"
 }
 
 group = "de.smartsquare"
@@ -21,42 +24,42 @@ repositories {
 }
 
 dependencies {
-    api(platform("com.fasterxml.jackson:jackson-bom:2.16.1"))
+    api(platform("com.fasterxml.jackson:jackson-bom:2.17.2"))
     api("com.fasterxml.jackson.core:jackson-databind")
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-
-    implementation("org.msgpack:msgpack-core:0.9.7")
-    implementation("org.msgpack:jackson-dataformat-msgpack:0.9.7")
+    implementation("org.msgpack:msgpack-core:0.9.8")
+    implementation("org.msgpack:jackson-dataformat-msgpack:0.9.8")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 
-    compileOnly("redis.clients:jedis:5.1.0")
-    compileOnly("io.lettuce:lettuce-core:6.3.1.RELEASE")
-    compileOnly("org.springframework.boot:spring-boot-starter-data-redis:2.7.18")
+    compileOnly("redis.clients:jedis:5.1.5")
+    compileOnly("io.lettuce:lettuce-core:6.4.0.RELEASE")
+    compileOnly("org.springframework.boot:spring-boot-starter-data-redis:3.3.3")
 
-    testImplementation("io.mockk:mockk:1.13.9")
+    testImplementation("io.mockk:mockk:1.13.12")
     testImplementation("org.amshove.kluent:kluent:1.73")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.1")
-    testImplementation("org.skyscreamer:jsonassert:1.5.1")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.3")
-    testImplementation("com.redis:testcontainers-redis:2.0.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testImplementation("org.skyscreamer:jsonassert:1.5.3")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+    testImplementation("com.redis:testcontainers-redis:2.2.2")
 
-    testImplementation("redis.clients:jedis:5.1.0")
-    testImplementation("io.lettuce:lettuce-core:6.3.1.RELEASE")
-    testImplementation("org.springframework.boot:spring-boot-starter-data-redis:2.7.18")
+    testImplementation("redis.clients:jedis:5.1.5")
+    testImplementation("io.lettuce:lettuce-core:6.4.0.RELEASE")
+    testImplementation("org.springframework.boot:spring-boot-starter-data-redis:3.3.3")
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 kotlin {
     compilerOptions {
-        jvmTarget = JvmTarget.JVM_1_8
+        jvmTarget = JvmTarget.JVM_17
         allWarningsAsErrors = true
     }
 }
@@ -67,12 +70,34 @@ detekt {
     buildUponDefaultConfig = true
 }
 
-tasks.withType<DokkaTask>().configureEach {
-    dokkaSourceSets.configureEach {
-        externalDocumentationLink("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/")
-        externalDocumentationLink("https://javadoc.io/doc/io.lettuce/lettuce-core/latest/")
-        externalDocumentationLink("https://javadoc.io/doc/redis.clients/jedis/latest/")
+dokkatoo {
+    val jacksonVersion = resolveVersion("com.fasterxml.jackson.core:jackson-core")
+    val lettuceVersion = resolveVersion("io.lettuce:lettuce-core")
+    val jedisVersion = resolveVersion("redis.clients:jedis")
+    val springDataRedisVersion = resolveVersion("org.springframework.boot:spring-boot-starter-data-redis")
+
+    dokkatooSourceSets.configureEach {
+        externalDocumentationLinks.create("jackson") {
+            url("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/$jacksonVersion/")
+        }
+        externalDocumentationLinks.create("lettuce") {
+            url("https://javadoc.io/doc/io.lettuce/lettuce-core/$lettuceVersion/")
+        }
+        externalDocumentationLinks.create("jedis") {
+            url("https://javadoc.io/doc/redis.clients/jedis/$jedisVersion/")
+        }
+        externalDocumentationLinks.create("spring-data-redis") {
+            url("https://docs.spring.io/spring-data/redis/docs/$springDataRedisVersion/api/")
+            packageListUrl("https://docs.spring.io/spring-data/redis/docs/$springDataRedisVersion/api/element-list")
+        }
     }
+}
+
+fun resolveVersion(dependency: String): String {
+    return project.configurations.getByName("compileClasspath").resolvedConfiguration.resolvedArtifacts
+        .find { it.moduleVersion.id.module.toString() == dependency }
+        ?.moduleVersion?.id?.version
+        ?: "latest"
 }
 
 tasks.withType<Test>().configureEach {
@@ -95,6 +120,8 @@ fun isNonStable(version: String): Boolean {
 }
 
 mavenPublishing {
+    configure(KotlinJvm(JavadocJar.Dokka("dokkatooGeneratePublicationJavadoc")))
+
     publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
     signAllPublications()
 
@@ -140,5 +167,5 @@ mavenPublishing {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "8.5"
+    gradleVersion = "8.10"
 }

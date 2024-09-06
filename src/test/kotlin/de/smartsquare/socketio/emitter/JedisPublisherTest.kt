@@ -14,7 +14,7 @@ import redis.clients.jedis.JedisPool
 class JedisPublisherTest {
 
     @Container
-    private val redis = RedisContainer("redis:6-alpine")
+    private val redis = RedisContainer("redis:7-alpine")
 
     private lateinit var pool: JedisPool
 
