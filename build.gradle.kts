@@ -1,15 +1,14 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("signing")
-    id("maven-publish")
     kotlin("jvm") version "1.9.22"
     id("org.jetbrains.dokka") version "1.9.10"
     id("io.gitlab.arturbosch.detekt") version "1.23.4"
     id("org.jmailen.kotlinter") version "4.2.0"
-    id("io.github.gradle-nexus.publish-plugin") version "1.3.0"
+    id("com.vanniktech.maven.publish") version "0.29.0"
     id("com.github.ben-manes.versions") version "0.50.0"
 }
 
@@ -53,9 +52,6 @@ dependencies {
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
-
-    withJavadocJar()
-    withSourcesJar()
 }
 
 kotlin {
@@ -69,10 +65,6 @@ detekt {
     config.setFrom("${project.rootDir}/detekt.yml")
 
     buildUponDefaultConfig = true
-}
-
-tasks.named<Jar>("javadocJar") {
-    from(tasks.named("dokkaJavadoc"))
 }
 
 tasks.withType<DokkaTask>().configureEach {
@@ -102,66 +94,48 @@ fun isNonStable(version: String): Boolean {
     return !isStable
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "socket-io-redis-emitter"
+mavenPublishing {
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, automaticRelease = true)
+    signAllPublications()
 
-            from(components["java"])
+    pom {
+        name = "Socket-io-Redis-Emitter"
+        description = "Library to emit socket.io notifications via redis."
+        url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter"
+        inceptionYear = "2021"
 
-            pom {
-                name = "Socket-io-Redis-Emitter"
-                description = "Library to emit socket.io notifications via redis."
-                url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter"
-
-                licenses {
-                    license {
-                        name = "MIT License"
-                        url = "https://opensource.org/licenses/MIT"
-                    }
-                }
-                developers {
-                    developer {
-                        id = "deen13"
-                        name = "Dennis Dierkes"
-                        email = "dierkes@smartsquare.de"
-                    }
-                }
-                scm {
-                    connection = "scm:git:https://github.com/SmartsquareGmbH/socket-io-redis-emitter.git"
-                    developerConnection = "scm:git:ssh://github.com/SmartsquareGmbH/socket-io-redis-emitter.git"
-                    url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter"
-                }
-                organization {
-                    name = "Smartsquare GmbH"
-                    url = "https://github.com/SmartsquareGmbH"
-                }
-                issueManagement {
-                    system = "GitHub"
-                    url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter/issues"
-                }
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://opensource.org/license/mit"
+                distribution = "https://opensource.org/license/mit"
             }
         }
-    }
-}
-
-nexusPublishing {
-    repositories {
-        sonatype {
-            nexusUrl.set(uri("https://s01.oss.sonatype.org/service/local/"))
-            snapshotRepositoryUrl.set(uri("https://s01.oss.sonatype.org/content/repositories/snapshots/"))
-            username = project.findProperty("gpr.ossrhUser")?.toString() ?: System.getenv("OSSRHUSER")
-            password = project.findProperty("gpr.ossrhPassword")?.toString() ?: System.getenv("OSSRHPASSWORD")
+        developers {
+            developer {
+                id = "deen13"
+                name = "Dennis Dierkes"
+                email = "dierkes@smartsquare.de"
+            }
+            developer {
+                id = "rubengees"
+                name = "Ruben Gees"
+                email = "gees@smartsquare.de"
+            }
         }
-    }
-}
-
-signing {
-    if (!version.toString().endsWith("SNAPSHOT")) {
-        val signingKey = findProperty("signingKey")?.toString() ?: System.getenv("GPG_PRIVATE_KEY")
-        val signingPassword = findProperty("signingPassword")?.toString() ?: System.getenv("GPG_PASSPHRASE")
-        useInMemoryPgpKeys(signingKey, signingPassword)
-        sign(publishing.publications)
+        scm {
+            connection = "scm:git:https://github.com/SmartsquareGmbH/socket-io-redis-emitter.git"
+            developerConnection = "scm:git:ssh://github.com/SmartsquareGmbH/socket-io-redis-emitter.git"
+            url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter"
+        }
+        organization {
+            name = "Smartsquare GmbH"
+            url = "https://github.com/SmartsquareGmbH"
+        }
+        issueManagement {
+            system = "GitHub"
+            url = "https://github.com/SmartsquareGmbH/socket-io-redis-emitter/issues"
+        }
     }
 }
 
