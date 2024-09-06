@@ -1,12 +1,14 @@
-FROM gradle:7.0.2-jdk11 AS build
-COPY --chown=gradle:gradle . /home/gradle/src
-WORKDIR /home/gradle/src
-RUN gradle build --no-daemon
+FROM gradle:8-jdk17-alpine AS build
 
-FROM openjdk:11-jre-slim
+COPY . /app
+WORKDIR /app
 
-RUN mkdir /app
+RUN --mount=type=cache,id=gradle-cache,target=/root/.gradle gradle build
 
-COPY --from=build /home/gradle/src/build/libs/ /app/
+FROM eclipse-temurin:17-alpine
 
-ENTRYPOINT ["java","-jar","/app/socket-io-redis-emitter-example-backend-1.0.jar"]
+WORKDIR /app
+
+COPY --from=build /app/build/libs/ /app/
+
+ENTRYPOINT ["java", "-jar", "example-backend-1.0.0-SNAPSHOT.jar"]

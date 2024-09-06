@@ -1,12 +1,12 @@
-FROM node:16-alpine AS build
-WORKDIR /workspace
+FROM node:20-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
-ENV NODE_ENV production
+COPY . /app
+WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn --frozen-lockfile --network-timeout 100000
-
-COPY . .
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
 EXPOSE 8082
-CMD ["node", "index.js"]
+CMD [ "pnpm", "start" ]
