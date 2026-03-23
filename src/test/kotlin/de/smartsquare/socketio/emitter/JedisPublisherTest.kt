@@ -8,29 +8,29 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-import redis.clients.jedis.JedisPool
+import redis.clients.jedis.RedisClient
 
 @Testcontainers
 class JedisPublisherTest {
 
     @Container
-    private val redis = RedisContainer("redis:7-alpine")
+    private val redis = RedisContainer("redis:8-alpine")
 
-    private lateinit var pool: JedisPool
+    private lateinit var client: RedisClient
 
     @BeforeEach
     fun setUp() {
-        pool = JedisPool(redis.redisURI)
+        client = RedisClient.create(redis.redisURI)
     }
 
     @AfterEach
     fun tearDown() {
-        pool.close()
+        client.close()
     }
 
     @Test
     fun `publish string message`() {
-        val publisher = Emitter(JedisPublisher(pool))
+        val publisher = Emitter(JedisPublisher(client))
 
         val (channel, message) = awaitRedisMessage(redis.redisURI, "socket.io#/#") {
             publisher.broadcast("topic", "test 123")

@@ -1,0 +1,51 @@
+[versions]
+kotlin = "2.3.20"
+dokka = "2.1.0"
+detekt = "2.0.0-alpha.2"
+kotlinter = "5.4.2"
+maven-publish = "0.36.0"
+versions-plugin = "0.53.0"
+gradle = "9.4.1"
+
+jackson = "2.21.2"
+msgpack = "0.9.11"
+jedis = "7.4.0"
+lettuce = "7.5.0.RELEASE"
+spring-boot = "4.0.4"
+mockk = "1.14.9"
+kluent = "1.73"
+junit = "6.0.3"
+testcontainers = "2.0.4"
+redis-testcontainers = "2.2.4"
+jsonassert = "1.5.3"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+dokka-javadoc = { id = "org.jetbrains.dokka-javadoc", version.ref = "dokka" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
+kotlinter = { id = "org.jmailen.kotlinter", version.ref = "kotlinter" }
+maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "maven-publish" }
+versions = { id = "com.github.ben-manes.versions", version.ref = "versions-plugin" }
+
+[libraries]
+jackson = { module = "com.fasterxml.jackson:jackson-bom", version.ref = "jackson" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind" }
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
+jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8" }
+jackson-datatype-jsr310 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jsr310" }
+
+msgpack-core = { module = "org.msgpack:msgpack-core", version.ref = "msgpack" }
+msgpack-jackson = { module = "org.msgpack:jackson-dataformat-msgpack", version.ref = "msgpack" }
+
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
+lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
+spring-boot-starter-data-redis = { module = "org.springframework.boot:spring-boot-starter-data-redis", version.ref = "spring-boot" }
+
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kluent = { module = "org.amshove.kluent:kluent", version.ref = "kluent" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+jsonassert = { module = "org.skyscreamer:jsonassert", version.ref = "jsonassert" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:testcontainers-junit-jupiter", version.ref = "testcontainers" }
+testcontainers-redis = { module = "com.redis:testcontainers-redis", version.ref = "redis-testcontainers" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }

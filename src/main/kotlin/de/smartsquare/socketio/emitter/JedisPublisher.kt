@@ -1,9 +1,9 @@
 package de.smartsquare.socketio.emitter
 
-import redis.clients.jedis.JedisPool
+import redis.clients.jedis.RedisClient
 
-class JedisPublisher(private val jedisPool: JedisPool) : RedisPublisher {
+class JedisPublisher(private val redisClient: RedisClient) : RedisPublisher {
     override fun publish(channel: String, message: ByteArray) {
-        jedisPool.resource.use { it.publish(channel.toByteArray(), message) }
+        redisClient.publish(channel.toByteArray(), message)
     }
 }
