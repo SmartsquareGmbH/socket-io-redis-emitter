@@ -15,7 +15,7 @@ spring-boot = "4.0.5"
 mockk = "1.14.9"
 kluent = "1.73"
 junit = "6.0.3"
-testcontainers = "2.0.4"
+testcontainers = "2.0.5"
 redis-testcontainers = "2.2.4"
 jsonassert = "1.5.3"
 
