@@ -19,9 +19,7 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           distribution: temurin
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
+          cache: "gradle"
 
       - name: Check
         run: ./gradlew check detektMain
