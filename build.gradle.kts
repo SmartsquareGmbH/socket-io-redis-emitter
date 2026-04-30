@@ -66,17 +66,22 @@ detekt {
 
 dokka {
     dokkaSourceSets.configureEach {
+        sourceLink { remoteUrl("https://github.com/SmartsquareGmbh/socket-io-redis-emitter/tree/main") }
+
         externalDocumentationLinks.register("jackson") {
-            url("https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/${libs.versions.jackson.get()}/")
+            url(libs.versions.jackson.map { "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/$it" })
+            packageListUrl(url.map { it.resolve("${it.path}/package-list").normalize().toString() })
         }
         externalDocumentationLinks.register("lettuce") {
-            url("https://javadoc.io/doc/io.lettuce/lettuce-core/${libs.versions.lettuce.get()}/")
+            url(libs.versions.lettuce.map { "https://javadoc.io/doc/io.lettuce/lettuce-core/$it" })
+            packageListUrl(url.map { it.resolve("${it.path}/package-list").normalize().toString() })
         }
         externalDocumentationLinks.register("jedis") {
-            url("https://javadoc.io/doc/redis.clients/jedis/${libs.versions.jedis.get()}/")
+            url(libs.versions.jedis.map { "https://javadoc.io/doc/redis.clients/jedis/$it" })
+            packageListUrl(url.map { it.resolve("${it.path}/package-list").normalize().toString() })
         }
         externalDocumentationLinks.register("spring-data-redis") {
-            url("https://docs.spring.io/spring-data/redis/docs/${libs.versions.spring.boot.get()}/api/")
+            url(libs.versions.spring.boot.map { "https://docs.spring.io/spring-data/redis/docs/$it/api" })
             packageListUrl(url.map { it.resolve("${it.path}/element-list").normalize().toString() })
         }
     }
