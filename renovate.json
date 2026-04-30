@@ -1,34 +1,25 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": ["config:best-practices", "schedule:weekly"],
   "ignorePaths": ["example/**"],
-  "platformAutomerge": true,
+  "automerge": true,
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch"],
-      "automerge": true
+      "matchManagers": ["gradle", "gradle-wrapper"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "all non-major gradle dependencies",
+      "groupSlug": "all-minor-patch-gradle"
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchUpdateTypes": ["minor", "patch", "digest"],
+      "groupName": "all non-major github actions dependencies",
+      "groupSlug": "all-minor-patch-github-actions"
     },
     {
       "matchUpdateTypes": ["major"],
       "automerge": false,
       "dependencyDashboardApproval": true
-    },
-    {
-      "matchDepTypes": ["testImplementation", "testRuntimeOnly"],
-      "matchUpdateTypes": ["minor"],
-      "automerge": true
-    },
-    {
-      "matchManagers": ["github-actions", "gradle-wrapper"],
-      "matchUpdateTypes": ["minor"],
-      "automerge": true
-    },
-    {
-      "matchManagers": ["gradle"],
-      "matchDepTypes": ["plugin"],
-      "matchUpdateTypes": ["minor"],
-      "excludePackagePatterns": ["^org\\.jetbrains\\.kotlin"],
-      "automerge": true
     }
   ]
 }
