@@ -8,7 +8,7 @@ versions-plugin = "0.54.0"
 gradle = "9.4.1"
 
 jackson = "2.21.3"
-msgpack = "0.9.11"
+msgpack = "0.9.12"
 jedis = "7.5.0"
 lettuce = "7.5.1.RELEASE"
 spring-boot = "4.0.6"
