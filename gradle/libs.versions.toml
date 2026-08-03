@@ -4,7 +4,7 @@ dokka = "2.2.0"
 detekt = "2.0.0-alpha.5"
 kotlinter = "5.6.0"
 maven-publish = "0.37.0"
-versions-plugin = "0.54.0"
+versions-plugin = "0.59.0"
 gradle = "9.4.1"
 
 jackson = "2.22.1"
