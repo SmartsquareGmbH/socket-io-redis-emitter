@@ -7,7 +7,7 @@ maven-publish = "0.37.0"
 versions-plugin = "0.61.0"
 gradle = "9.4.1"
 
-jackson = "2.22.1"
+jackson = "2.22.2"
 msgpack = "0.9.12"
 jedis = "7.5.3"
 lettuce = "7.6.0.RELEASE"
